@@ -38,7 +38,38 @@ class AuthController extends Controller
         $request->user()->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out'
+            'message' => 'Logged out successfully!'
         ]);
     }
+
+    public function register(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|min:7',
+            'profile_picture' => ['nullable', 'image', 'max:2048'],
+            'short_description' => 'nullable|string|max:255',
+        ]);
+
+        if ($request->hasFile('profile_picture')) {
+            $data['profile_picture'] = $request
+                ->file('profile_picture')
+                ->store('profile-pictures', 'public');
+        }
+
+        $user = User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => bcrypt($data['password']),
+            'short_description' => $data['short_description'] ?? null,
+            'profile_picture' => $data['profile_picture'] ?? null,
+            'is_active' => false, // sandbox
+        ]);
+
+        return response()->json([
+            'message' => 'Registered, but approval is expected.'
+        ], 201);
+    }
+
 }

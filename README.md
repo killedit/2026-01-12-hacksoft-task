@@ -29,7 +29,7 @@ The back-end Laravel Rest API should runs at:</br>
         Dockerfile                  # Backend container setup.
         .env                        # Laravel specific settings.
     /{fronend}                      # Future {frontend}.
-    docker-compose.yaml             # Where all containers are definied. I like naming my containers (`container_name`), but that breaks the scalability.
+    docker-compose.yaml             # Where all containers are definied.
     .env                            # This is neede for MySQL docker container initialization.
 ```
 
@@ -84,7 +84,20 @@ curl -X POST http://localhost:8009/api/login \
 curl -X POST http://localhost:8009/api/logout \
   -H "Authorization: Bearer 2|n8647i0Fc4o8GSiCphPRuSTuyqlqfhVjvZBolvUGce02f90f" \
   -H "Content-Type: application/json"
+
+curl --location 'http://127.0.0.1:8009/api/me' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
+
+curl -X POST http://localhost:8009/api/register \
+  -F "name=User" \
+  -F "email=user@example.com" \
+  -F "password=user123" \
+  -F "short_description=Just a new user." \
+  -F "profile_picture=@/path/to/image.jpg"
 ```
+
+You can run tests with example profile pictures `resources/images/`. The model will save them in `storage/public/profile-pictures/`. The current logged-in resource `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url infront to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
 
 2. Postman.
 
@@ -99,10 +112,8 @@ There is a Postman collection and environment that need to be imported in.
 3. OpenAPI Swagger.
 
 
-<!--
-
 Tasks:
-- Registration resource.
+- Sandboxed users should not be able to log in!
 - Profile resource.
 - Posts resource.
 - Feed resource.
@@ -112,7 +123,6 @@ Tasks:
 - Rate limiting. Trottling.
 - Sanctum middleware for CORS.
 - Avoid n+1 query problem ::with();.
-- Handle 405 method not allowed as 404 to prevent information leakeage?
 - use SoftDeletes;.
 - Proper datetime conversion with Carbon middleware.
 - Migrations. Seeders.
@@ -130,5 +140,5 @@ Tasks:
 Done:
 - Docker initial setup.
 - Authentication resource.
-
--->
+- Registration resource. Images are stored in 
+- Handle 405 method not allowed as 404 to prevent information leakeage. http://127.0.0.1:8009/api/{login} will return json response instead of debug backtrace.
