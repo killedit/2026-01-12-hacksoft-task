@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "e6268246-3d35-4895-8d1f-a53e57bafbef",
+		"name": "2026-01-12-hacksoft-task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31613656"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let responseData = pm.response.json();",
+							"",
+							"console.log(responseData.token);",
+							"",
+							"if (responseData.token) {",
+							"    pm.environment.set(\"token\", responseData.token);",
+							"    console.log(\"Token saved to environment:\", responseData.token);",
+							"} else {",
+							"    console.warn(\"No token found in response!\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"email\":\"test@example.com\",\n    \"password\":\"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8009/api/login",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8009",
+					"path": [
+						"api",
+						"login"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

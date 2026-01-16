@@ -6,34 +6,36 @@ git clone https://github.com/killedit/2026-01-12-hacksoft-task.git
 cd 2026-01-12-hacksoft-task
 docker compose up -d --build
 ```
-If you want to follow the docker container logs remove the `-d` flad so you don't detach at the build process.
+If you want to follow the docker container logs remove the `-d` flag so you don't detach at the build process.
 
 The application should run migrations and seeders.</br>
 
-The back-end, Laravel Rest API, runs at:</br>
+The back-end Laravel Rest API should runs at:</br>
 `http://127.0.0.1:8009`
 
-
 ## Overall project structure:
+
 ```
 2026-01-12-hacksoft-task
     /docker
         /nginx
-            default.conf
+            default.conf            # Nginx. Reverse proxy.
         /php
             /conf.d
-                xdebug.ini
-            entrypoint.sh
-    /laravel                    # Laravel application.
-        Dockerfile              # Backend container setup.
-        .env                    # Laravel specific settings.
-    docker-compose.yaml         # Where all containers are definied.
-    .env                        # This is neede for MySQL docker container initialization.
+                xdebug.ini          # Xdebug. Test coverage.
+            entrypoint-laravel.sh   # Bash script that runs migrations and seeders in the Laravel container.
+            entrypoint-worker.sh    # The scheduler and the queue only need to wait only for working MySQL and Redis.
+    /laravel                        # Back-end application.
+        Dockerfile                  # Backend container setup.
+        .env                        # Laravel specific settings.
+    /{fronend}                      # Future {frontend}.
+    docker-compose.yaml             # Where all containers are definied. I like naming my containers (`container_name`), but that breaks the scalability.
+    .env                            # This is neede for MySQL docker container initialization.
 ```
 
 ## Connect to the database
 
-Option 1: Connect to `hacksoft-mysql` container:
+Option 1: Connect to `hacksoft-mysql-1` container:
 
 ```
 docker exec -it hacksoft-mysql-1 bash
@@ -60,3 +62,73 @@ Driver properties:
 Test Connection...
 ```
 
+## REST API resources
+
+I have created a `Test` user that should play the role of admin with password `test123` in db seeder.
+
+| Method | Endpoint | Controller | Description |
+| --- | --- | --- | --- |
+| `POST` | `/api/login` | AuthController@login | Login. |
+| `POST` | `/api/logout` | AuthController@logout | Logout. |
+| `GET` | `/api/me` | AuthController@me | List current user. Useful for testing. |
+
+### How to test the API endpoints
+
+1. Curl.
+
+```
+curl -X POST http://localhost:8009/api/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com","password":"test123"}'
+
+curl -X POST http://localhost:8009/api/logout \
+  -H "Authorization: Bearer 2|n8647i0Fc4o8GSiCphPRuSTuyqlqfhVjvZBolvUGce02f90f" \
+  -H "Content-Type: application/json"
+```
+
+2. Postman.
+
+There is a Postman collection and environment that need to be imported in.
+
+`/laravel/postman/2026-01-12-hacksoft-task.postman_environment.json` </br>
+`/laravel/postman/2026-01-12-hacksoft-task.postman_collection.json`
+
+![Postman collection](laravel/resources/images/2026-01-12-hacksoft-task-postman-collection-login-resource-token.png) 
+![Postman environment](laravel/resources/images/2026-01-12-hacksoft-task-postman-environment-variable-token.png) 
+
+3. OpenAPI Swagger.
+
+
+<!--
+
+Tasks:
+- Registration resource.
+- Profile resource.
+- Posts resource.
+- Feed resource.
+- Sheduler.
+- Queue.
+- Admin panel !!!
+- Rate limiting. Trottling.
+- Sanctum middleware for CORS.
+- Avoid n+1 query problem ::with();.
+- Handle 405 method not allowed as 404 to prevent information leakeage?
+- use SoftDeletes;.
+- Proper datetime conversion with Carbon middleware.
+- Migrations. Seeders.
+- Caching.
+- Postman collections and environment.
+- OpenAPI Swagger.
+- Integration tests.
+- Test coverage.
+- README.md. Printscreens.
+- Build process test !!!
+- Remove comments //HERE.
+- Contributor.
+- Email.
+
+Done:
+- Docker initial setup.
+- Authentication resource.
+
+-->
