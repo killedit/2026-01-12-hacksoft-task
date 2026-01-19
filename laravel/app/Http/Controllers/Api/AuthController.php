@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
@@ -22,6 +23,14 @@ class AuthController extends Controller
             return response()->json([
                 'message' => 'Invalid credentials'
             ], 401);
+        }
+
+        if (!$user->is_approved) {
+            Auth::logout();
+
+            return response()->json([
+                'message' => 'User is awaiting approval.'
+            ], 403);
         }
 
         $token = $user->createToken('api-token')->plainTextToken;
@@ -64,7 +73,7 @@ class AuthController extends Controller
             'password' => bcrypt($data['password']),
             'short_description' => $data['short_description'] ?? null,
             'profile_picture' => $data['profile_picture'] ?? null,
-            'is_active' => false, // sandbox
+            'is_active' => false,
         ]);
 
         return response()->json([

@@ -12,8 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('profile_picture')->nullable();
-            $table->string('description')->nullable();
+            $table->boolean('is_approved')->default(false);
         });
     }
 
@@ -23,8 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('profile_picture');
-            $table->dropColumn('description');
+            $table->dropColumn('is_approved');
         });
     }
 };
