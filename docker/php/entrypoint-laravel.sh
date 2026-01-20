@@ -15,6 +15,9 @@ until php -r "try { \$redis = new Redis(); \$redis->connect(getenv('REDIS_HOST')
   sleep 3
 done
 
+echo "Regenerating autoloader..."
+composer dump-autoload --no-dev --optimize || true
+
 echo "Running migrations & seeders..."
 php artisan migrate --force || true
 php artisan db:seed --force || true

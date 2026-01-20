@@ -58,7 +58,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:7',
             'profile_picture' => ['nullable', 'image', 'max:2048'],
-            'short_description' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:255',
         ]);
 
         if ($request->hasFile('profile_picture')) {
@@ -71,9 +71,9 @@ class AuthController extends Controller
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'short_description' => $data['short_description'] ?? null,
+            'description' => $data['description'] ?? null,
             'profile_picture' => $data['profile_picture'] ?? null,
-            'is_active' => false,
+            'is_approved' => false,
         ]);
 
         return response()->json([

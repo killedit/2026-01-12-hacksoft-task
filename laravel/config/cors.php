@@ -5,7 +5,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'], //HERE
+    'allowed_origins' => ['*'],
 
     'allowed_headers' => ['*'],
 

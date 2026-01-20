@@ -10,13 +10,20 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    zip \
-    unzip \
     libzip-dev \
-    redis-tools \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip \
-    && pecl install redis \
-    && docker-php-ext-enable redis \
+    zip unzip \
+    libicu-dev \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd \
+        zip \
+        intl \
+    && pecl install redis xdebug \
+    && docker-php-ext-enable redis xdebug \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

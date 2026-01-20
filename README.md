@@ -77,11 +77,11 @@ I have created a `Test` user that should play the role of admin with password `t
 1. Curl.
 
 ```
-curl -X POST http://localhost:8009/api/login \
+curl -X POST http://127.0.0.1:8009/api/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"test123"}'
 
-curl -X POST http://localhost:8009/api/logout \
+curl -X POST http://127.0.0.1:8009/api/logout \
   -H "Authorization: Bearer 2|n8647i0Fc4o8GSiCphPRuSTuyqlqfhVjvZBolvUGce02f90f" \
   -H "Content-Type: application/json"
 
@@ -89,11 +89,11 @@ curl --location 'http://127.0.0.1:8009/api/me' \
 --header 'Content-Type: application/json' \
 --header 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
 
-curl -X POST http://localhost:8009/api/register \
+curl -X POST http://127.0.0.1:8009/api/register \
   -F "name=User" \
   -F "email=user@example.com" \
   -F "password=user123" \
-  -F "short_description=Just a new user." \
+  -F "description=Just a new user." \
   -F "profile_picture=@/path/to/image.jpg"
 ```
 
@@ -111,15 +111,21 @@ There is a Postman collection and environment that need to be imported in.
 
 3. OpenAPI Swagger.
 
+### Admin panel
+
+The admin panel is installed with Filament. You can use the default user `test@example.com` and `test123`.
+[http://127.0.0.1:8009/admin]
+
+![Postman RegisterUser](laravel/resources/images/2026-01-12-hacksoft-task-postman-register-user.png)
+![Postman Filament Admin](laravel/resources/images/2026-01-12-hacksoft-task-filament-users.png)
+![Postman Filament Approve](laravel/resources/images/2026-01-12-hacksoft-task-filament-approve-user.png)
 
 Tasks:
-- Sandboxed users should not be able to log in!
 - Profile resource.
 - Posts resource.
 - Feed resource.
 - Sheduler.
 - Queue.
-- Admin panel !!!
 - Rate limiting. Trottling.
 - Sanctum middleware for CORS.
 - Avoid n+1 query problem ::with();.
@@ -133,7 +139,6 @@ Tasks:
 - Test coverage.
 - README.md. Printscreens.
 - Build process test !!!
-- Remove comments //HERE.
 - Contributor.
 - Email.
 
@@ -142,3 +147,5 @@ Done:
 - Authentication resource.
 - Registration resource. Images are stored in 
 - Handle 405 method not allowed as 404 to prevent information leakeage. http://127.0.0.1:8009/api/{login} will return json response instead of debug backtrace.
+- Sandboxed users should not be able to log in!
+- Admin panel !!!

@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
@@ -24,6 +26,8 @@ class User extends Authenticatable
         'password',
         'profile_picture',
         'description',
+        'is_approved',
+        'is_admin',
     ];
 
     /**
@@ -46,6 +50,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
+            'is_approved' => 'boolean',
         ];
     }
+
+    // public function canAccessPanel(Panel $panel): bool
+    // {
+    //     return (bool) $this->is_admin;
+    // }
+    public function canAccessPanel(\Filament\Panel $panel): bool
+    {
+        return $this->is_admin === true && $this->is_approved === true;
+    }
+
 }
