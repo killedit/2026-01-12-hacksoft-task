@@ -14,6 +14,10 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Placeholder;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
+
+use Illuminate\Support\HtmlString;
 
 class UserResource extends Resource
 {
@@ -29,7 +33,6 @@ class UserResource extends Resource
             TextInput::make('name')->required(),
             TextInput::make('email')->email()->required(),
 
-            // Show current hash and optional new password
             Placeholder::make('password_hash')
                 ->label('Current password hash')
                 ->content(fn ($record) => $record?->password ?? '—'),
@@ -40,8 +43,20 @@ class UserResource extends Resource
                 ->dehydrateStateUsing(fn ($state) => $state ? bcrypt($state) : null)
                 ->dehydrated(fn ($state) => filled($state)),
 
-            Toggle::make('is_approved')->label('Approved'),
             TextInput::make('description')->nullable(),
+
+            FileUpload::make('profile_picture')
+                ->label('Profile Picture')
+                ->image()
+                ->avatar()
+                ->imageEditor()
+                // ->circular()
+                ->disk('public')
+                ->directory('profile-pictures')
+                ->visibility('public')
+                ->nullable(),
+
+            Toggle::make('is_approved')->label('Approved'),
         ]);
     }
 
@@ -51,6 +66,11 @@ class UserResource extends Resource
             ->columns([
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('email')->searchable(),
+                ImageColumn::make('profile_picture')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->circular()
+                    ->label('Avatar'),
                 IconColumn::make('is_approved')
                     ->boolean()
                     ->label('Approved'),

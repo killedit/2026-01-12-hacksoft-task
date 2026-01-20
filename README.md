@@ -113,15 +113,21 @@ There is a Postman collection and environment that need to be imported in.
 
 ### Admin panel
 
-The admin panel is installed with Filament. You can use the default user `test@example.com` and `test123`.
-[http://127.0.0.1:8009/admin]
+The admin panel is installed with Filament. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
+You can only approve newly registered and unapproved `Users`. The counter will show their number.</br>
+Photos and descriptions are stored via the `register` resource.</br>
+
+[http://localhost:8009/admin]
 
 ![Postman RegisterUser](laravel/resources/images/2026-01-12-hacksoft-task-postman-register-user.png)
-![Postman Filament Admin](laravel/resources/images/2026-01-12-hacksoft-task-filament-users.png)
-![Postman Filament Approve](laravel/resources/images/2026-01-12-hacksoft-task-filament-approve-user.png)
+![Postman Filament Users List](laravel/resources/images/2026-01-12-hacksoft-task-filament-users-list.png)
+![Postman Filament Edit User](laravel/resources/images/2026-01-12-hacksoft-task-filament-edit-user.png)
+
+User that is not approved will not be able to login.
+
+![Postman Postman Unapproved](laravel/resources/images/2026-01-12-hacksoft-task-postman-unapproved-user-login.png)
 
 Tasks:
-- Profile resource.
 - Posts resource.
 - Feed resource.
 - Sheduler.
@@ -149,3 +155,4 @@ Done:
 - Handle 405 method not allowed as 404 to prevent information leakeage. http://127.0.0.1:8009/api/{login} will return json response instead of debug backtrace.
 - Sandboxed users should not be able to log in!
 - Admin panel !!!
+- Profile resource.
