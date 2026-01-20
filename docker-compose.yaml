@@ -6,12 +6,11 @@ services:
     # container_name: hacksoft_laravel
     restart: unless-stopped
     working_dir: /var/www/html
-    volumes:
+    volumes: &laravel
       - ./laravel:/var/www/html
       - /var/www/html/vendor
       - ./laravel/storage:/var/www/html/storage
-      - ./laravel/bootstrap/cache:/var/www/html/bootstrap/cache
-      - ./docker/php/entrypoint-laravel.sh:/usr/local/bin/entrypoint.sh:ro
+      - ./docker/php/entrypoint-laravel.sh:/usr/local/bin/entrypoint.sh:rw
     env_file:
       - ./laravel/.env
     depends_on:
@@ -29,9 +28,7 @@ services:
       dockerfile: ./laravel/Dockerfile
     # container_name: hacksoft_worker
     command: php artisan queue:work --sleep=3 --tries=3 --timeout=90
-    volumes:
-      - ./laravel:/var/www/html
-      - ./docker/php/entrypoint-worker.sh:/usr/local/bin/entrypoint.sh:ro
+    volumes: *laravel
     depends_on:
       - mysql
       - redis
@@ -45,9 +42,7 @@ services:
       dockerfile: ./laravel/Dockerfile
     # container_name: hacksoft_scheduler
     command: php artisan schedule:work
-    volumes:
-      - ./laravel:/var/www/html
-      - ./docker/php/entrypoint-worker.sh:/usr/local/bin/entrypoint.sh:ro
+    volumes: *laravel
     depends_on:
       - mysql
       - redis
