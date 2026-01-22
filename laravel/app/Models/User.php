@@ -9,11 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -38,6 +38,7 @@ class User extends Authenticatable implements FilamentUser
     protected $hidden = [
         'password',
         'remember_token',
+        'pivot'
     ];
 
     /**
@@ -55,13 +56,32 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    // public function canAccessPanel(Panel $panel): bool
-    // {
-    //     return (bool) $this->is_admin;
-    // }
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
-        return $this->is_admin === true && $this->is_approved === true;
+        return $this->is_approved === true;
+    }
+
+    public function posts() {
+        return $this->hasMany(Post::class);
+    }
+
+    public function likedPosts() {
+        return $this->belongsToMany(Post::class, 'likes');
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function (User $user) {
+            if ($user->isForceDeleting()) {
+                $user->posts()->forceDelete();
+            } else {
+                $user->posts()->delete();
+            }
+        });
+
+        static::restoring(function (User $user) {
+            $user->posts()->onlyTrashed()->restore();
+        });
     }
 
 }

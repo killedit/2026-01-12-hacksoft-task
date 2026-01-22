@@ -16,8 +16,9 @@ use Filament\Forms\Components\Placeholder;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\FileUpload;
 use Filament\Tables\Columns\ImageColumn;
-
+use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class UserResource extends Resource
 {
@@ -80,6 +81,12 @@ class UserResource extends Resource
                 Filter::make('unapproved')
                     ->label('Unapproved Users')
                     ->query(fn ($query) => $query->where('is_approved', false)),
+                TrashedFilter::make(),
+            ])
+            ->actions([
+                \Filament\Actions\EditAction::make(),
+                \Filament\Actions\DeleteAction::make(),
+                \Filament\Actions\RestoreAction::make(),
             ])
             ->recordUrl(
                 fn (User $record): string => route('filament.admin.resources.users.edit', $record)
@@ -109,7 +116,10 @@ class UserResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery();
+        return parent::getEloquentQuery()
+        ->withoutGlobalScopes([
+            SoftDeletingScope::class,
+        ]);
     }
 
     public static function getNavigationBadge(): ?string

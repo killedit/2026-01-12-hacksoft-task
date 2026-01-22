@@ -1,5 +1,7 @@
 # REST API for social media application
 
+![Hacksoft task home](laravel/resources/images/2026-01-12-hacksoft-task-home.png)
+
 ## Setup
 ```
 git clone https://github.com/killedit/2026-01-12-hacksoft-task.git
@@ -62,46 +64,109 @@ Driver properties:
 Test Connection...
 ```
 
+Relationship Diagram of the tables:
+```
+Users
+- hasMany (Posts) - we need # of posts by one user (task requirements)
+- hasMany (Likes) - we need # of likes on posts created by that one user (task requirements)
+
+Posts
+- belongsTo (User) - userFK
+- belongsToMany (Users) - likes via pivot table
+
+Likes
+- belongsTo (User) - userFK
+- belongsTo (Post) - postFK
+```
+
 ## REST API resources
 
 I have created a `Test` user that should play the role of admin with password `test123` in db seeder.
 
 | Method | Endpoint | Controller | Description |
 | --- | --- | --- | --- |
-| `POST` | `/api/login` | AuthController@login | Login. |
-| `POST` | `/api/logout` | AuthController@logout | Logout. |
-| `GET` | `/api/me` | AuthController@me | List current user. Useful for testing. |
+| `POST` | `/api/login` | AuthController@login | Login with an approved user. |
+| `POST` | `/api/logout` | AuthController@logout | Logout currently loggedin user. |
+| `POST` | `/api/register` | AuthController@register | Register a unapproved user. |
+| `GET` | `/api/me` | ProfileController@show | List current user's full data. |
+| `POST` | `/api/me` | ProfileController@update | Change loggedin user's name, description and profile_picture. PATCH will not work here. |
+| `GET` | `/api/posts{?cursor=prev_next_cursor_value}` | PostController@index | List all posts with `likers_count`, `likers` and `author`. User cursor in the response for pagination. |
+| `POST` | `/api/posts` | PostController@store | Create a post. |
+| `POST` | `/api/posts/{post_id}/like` | PostController@toggleLike | Toggle like/dislike on a post. |
+| `DELETE` | `/api/posts/{post_id}/delete` | PostController@destroy | Delete a post. User can delete only posts they have created. |
+
 
 ### How to test the API endpoints
 
 1. Curl.
+- {} dynamic values
 
 ```
 curl -X POST http://127.0.0.1:8009/api/login \
-  -H "Content-Type: application/json" \
+  -H 'Content-Type: application/json' \
   -d '{"email":"test@example.com","password":"test123"}'
 
 curl -X POST http://127.0.0.1:8009/api/logout \
   -H "Authorization: Bearer 2|n8647i0Fc4o8GSiCphPRuSTuyqlqfhVjvZBolvUGce02f90f" \
   -H "Content-Type: application/json"
 
-curl --location 'http://127.0.0.1:8009/api/me' \
---header 'Content-Type: application/json' \
---header 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
-
 curl -X POST http://127.0.0.1:8009/api/register \
-  -F "name=User" \
-  -F "email=user@example.com" \
-  -F "password=user123" \
-  -F "description=Just a new user." \
-  -F "profile_picture=@/path/to/image.jpg"
+  -H 'Accept: application/json'
+  -H 'Content-Type: application/json' \
+  -F 'name="User"' \
+  -F 'email="user@example.com"' \
+  -F 'password="user123"' \
+  -F 'description="Just a new user."' \
+  -F 'profile_picture=@"/absolute/path/to/photo.jpg"'
+
+curl -X GET http://127.0.0.1:8009/api/me \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
+
+This "hack" below is because of the file upload. $_FILES parsing only works for POST. PATCH + JSON will make text-only uploads and the requirements ask to be able to change everything without email and password.
+
+curl -X POST  http://127.0.0.1:8009/api/me \
+  -H 'Accept: application/json'
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
+  -F '_method="PATCH"' \
+  -F 'name="User's changed the name."' \
+  -F 'description="User's changed the description."' \
+  -F 'profile_picture=@"/absolute/path/to/photo.jpg"'
+'
+
+curl -X GET 'http://127.0.0.1:8009/api/posts' \
+-H 'Accept: application/json' \
+-H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
+
+NB! Added pagination will show results in DESC manner, meaning the newest first. At bottom of the json response is `next_cursor` which you can use like this `GET /api/posts?cursor={next_or_previous_cursor_value}`. Also for easy testing in PostController@index change `->cursorPaginate(20);` to smt small like 2.
+
+http://127.0.0.1:8009/api/posts?cursor={eyJjcmVhdGVkX2F0IjoiMjAyNi0wMS0yMSAyMDoxNjoxNCIsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0}
+
+curl -X POST 'http://127.0.0.1:8009/api/posts' \
+-H 'Accept: application/json' \
+-H 'Content-Type: application/json' \
+-H 'Authorization: Bearer 2|tyaT0Ym6BDrlZf7vGo68PRgJmVj1JTODlTYWZBl989168284' \
+-d'{
+    "content":"This is a new post content."
+}'
+
+curl -X POST 'http://127.0.0.1:8009/api/posts/{1}/like' \
+-H 'Accept: application/json' \
+-H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
+
+curl -X DELETE 'http://127.0.0.1:8009/api/posts/{3}/delete' \
+-H 'Accept: application/json' \
+-H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
 ```
 
 You can run tests with example profile pictures `resources/images/`. The model will save them in `storage/public/profile-pictures/`. The current logged-in resource `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url infront to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
 
 2. Postman.
 
-There is a Postman collection and environment that need to be imported in.
+![Postman preview](laravel/resources/images/2026-01-12-hacksoft-postman-preview.png) 
+
+There is a Postman collection and Postman environment that need to be imported in.
 
 `/laravel/postman/2026-01-12-hacksoft-task.postman_environment.json` </br>
 `/laravel/postman/2026-01-12-hacksoft-task.postman_collection.json`
@@ -113,7 +178,7 @@ There is a Postman collection and environment that need to be imported in.
 
 ### Admin panel
 
-The admin panel is installed with Filament. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
+The admin panel is installed with Filament. Filament is FOSS and no paid features.. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
 You can only approve newly registered and unapproved `Users`. The counter will show their number.</br>
 Photos and descriptions are stored via the `register` resource.</br>
 
@@ -127,23 +192,21 @@ User that is not approved will not be able to login.
 
 ![Postman Postman Unapproved](laravel/resources/images/2026-01-12-hacksoft-task-postman-unapproved-user-login.png)
 
+Soft deleting user results in cascade soft deleting of their posts. Only admin user can delete other users.
+A logged in user can make CRUD operations only on their posts. They cannot assign/change author of a post.
+
+![Filament Soft Delete User Cascade Delete Posts](laravel/resources/images/2026-01-12-hacksoft-task-soft-delete-user-cascade-posts.png)
+
+Of course there are things to polish.
+
 Tasks:
-- Posts resource.
-- Feed resource.
 - Sheduler.
 - Queue.
 - Rate limiting. Trottling.
-- Sanctum middleware for CORS.
-- Avoid n+1 query problem ::with();.
-- use SoftDeletes;.
-- Proper datetime conversion with Carbon middleware.
-- Migrations. Seeders.
-- Caching.
-- Postman collections and environment.
+- README.md. Printscreens.
 - OpenAPI Swagger.
 - Integration tests.
 - Test coverage.
-- README.md. Printscreens.
 - Build process test !!!
 - Contributor.
 - Email.
@@ -152,7 +215,16 @@ Done:
 - Docker initial setup.
 - Authentication resource.
 - Registration resource. Images are stored in 
+- Sanctum middleware for CORS.
 - Handle 405 method not allowed as 404 to prevent information leakeage. http://127.0.0.1:8009/api/{login} will return json response instead of debug backtrace.
 - Sandboxed users should not be able to log in!
 - Admin panel !!!
 - Profile resource.
+- Posts resource.
+- Feed resource.
+- use SoftDeletes;.
+- Avoid n+1 query problem ::with();.
+- Migrations. Seeders.
+- Postman collections and environment.
+<!-- - Caching. -->
+<!-- - Proper datetime conversion with Carbon middleware. -->

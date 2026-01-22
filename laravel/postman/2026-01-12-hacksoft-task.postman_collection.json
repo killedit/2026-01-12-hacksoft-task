@@ -1,70 +1,473 @@
 {
-	"info": {
-		"_postman_id": "e6268246-3d35-4895-8d1f-a53e57bafbef",
-		"name": "2026-01-12-hacksoft-task",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "31613656"
-	},
-	"item": [
-		{
-			"name": "Login",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"let responseData = pm.response.json();",
-							"",
-							"console.log(responseData.token);",
-							"",
-							"if (responseData.token) {",
-							"    pm.environment.set(\"token\", responseData.token);",
-							"    console.log(\"Token saved to environment:\", responseData.token);",
-							"} else {",
-							"    console.warn(\"No token found in response!\");",
-							"}"
-						],
-						"type": "text/javascript",
-						"packages": {},
-						"requests": {}
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"email\":\"test@example.com\",\n    \"password\":\"test123\"\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://127.0.0.1:8009/api/login",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8009",
-					"path": [
-						"api",
-						"login"
-					]
-				}
-			},
-			"response": []
-		}
-	]
+  "info": {
+    "_postman_id": "e6268246-3d35-4895-8d1f-a53e57bafbef",
+    "name": "2026-01-12-hacksoft-task",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31613656"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "let responseData = pm.response.json();",
+              "",
+              "console.log(responseData.token);",
+              "",
+              "if (responseData.token) {",
+              "    pm.environment.set(\"token\", responseData.token);",
+              "    console.log(\"Token saved to environment:\", responseData.token);",
+              "} else {",
+              "    console.warn(\"No token found in response!\");",
+              "}"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"email\":\"user@example.com\",\n    \"password\":\"user123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/login",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "login"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Logout",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.environment.unset(\"token\");",
+              "console.log(\"Token removed from environment after logout\");"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/logout",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "logout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "RegisterUser",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Accept",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "name",
+              "value": "User",
+              "type": "text",
+              "uuid": "67bf1612-66c5-40d9-971c-06a96275315c"
+            },
+            {
+              "key": "email",
+              "value": "user@example.com",
+              "type": "text",
+              "uuid": "95ab82b1-5f69-442e-bb5b-dba9a69a6d2a"
+            },
+            {
+              "key": "password",
+              "value": "user123",
+              "type": "text",
+              "uuid": "ff40de35-af60-45e0-83d4-b25dda6b814c"
+            },
+            {
+              "key": "profile_picture",
+              "type": "file",
+              "uuid": "9f3c163d-a696-4917-bafb-ebb5d1d5c15a",
+              "src": "/home/tihomir/Desktop/Link to Dropbox/Projects/Programming/2026-01-12-hacksoft-task/laravel/resources/images/profile-picture-placeholder-001.jpg"
+            },
+            {
+              "key": "description",
+              "value": "Just a new user.",
+              "type": "text",
+              "uuid": "9f13f93d-2f66-4908-8118-86bdea17f4ea"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8009/api/register",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "register"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ListCurrentUser",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/me",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "UpdateCurrentUser",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "_method",
+              "value": "PATCH",
+              "type": "text",
+              "uuid": "6c94458c-caaf-4ea8-88f8-e87e9852092b"
+            },
+            {
+              "key": "name",
+              "value": "User changed the name.",
+              "type": "text",
+              "uuid": "f322c762-ea96-4b10-8c68-707b9e9010e0"
+            },
+            {
+              "key": "description",
+              "value": "User changed the description.",
+              "type": "text",
+              "uuid": "e21ce797-67a7-43ef-8118-b3074b865ac0"
+            },
+            {
+              "key": "profile_picture",
+              "type": "file",
+              "uuid": "5a198423-1e46-483c-832f-26068c247bd1",
+              "src": "/home/tihomir/Desktop/Link to Programming/2026-01-12-hacksoft-task/laravel/resources/images/profile-picture-placeholder-002.jpg"
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/me",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "me"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "ListPosts",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/posts",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "CreatePost",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"content\":\"This is a post's content.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/posts",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "TogglePostLike",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/posts/1/like",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "posts",
+            "1",
+            "like"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "DeletePost",
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{token}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://127.0.0.1:8009/api/posts/7/delete",
+          "protocol": "http",
+          "host": [
+            "127",
+            "0",
+            "0",
+            "1"
+          ],
+          "port": "8009",
+          "path": [
+            "api",
+            "posts",
+            "7",
+            "delete"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
 }
