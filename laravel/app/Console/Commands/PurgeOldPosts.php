@@ -25,10 +25,14 @@ class PurgeOldPosts extends Command
      */
     public function handle()
     {
-        $count = \App\Models\Post::onlyTrashed()
-        ->where('deleted_at', '<=', now()->subDays(10))
-        ->forceDelete();
+        $postsToPurge = \App\Models\Post::onlyTrashed()
+            ->where('deleted_at', '<=', now()->subDays(10))
+            ->get();
 
-        $this->info("Purged {$count} old posts.");
+        foreach ($postsToPurge as $post) {
+            \App\Jobs\PurgePostJob::dispatch($post->id);
+        }
+
+        $this->info("Dispatched " . $postsToPurge->count() . " posts to the queue for purging.");
     }
 }

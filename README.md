@@ -101,7 +101,7 @@ I have created a `Test` user that should play the role of admin with password `t
 1. Curl.
 - {} dynamic values
 
-```
+```bash
 curl -X POST http://127.0.0.1:8009/api/login \
   -H 'Content-Type: application/json' \
   -d '{"email":"test@example.com","password":"test123"}'
@@ -123,7 +123,7 @@ curl -X GET http://127.0.0.1:8009/api/me \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
 
-This "hack" below is because of the file upload. $_FILES parsing only works for POST. PATCH + JSON will make text-only uploads and the requirements ask to be able to change everything without email and password.
+# This "hack" below is because of the file upload. $_FILES parsing only works for POST. PATCH + JSON will make text-only uploads and the requirements ask to be able to change everything without email and password.
 
 curl -X POST  http://127.0.0.1:8009/api/me \
   -H 'Accept: application/json'
@@ -133,13 +133,12 @@ curl -X POST  http://127.0.0.1:8009/api/me \
   -F 'name="User's changed the name."' \
   -F 'description="User's changed the description."' \
   -F 'profile_picture=@"/absolute/path/to/photo.jpg"'
-'
 
 curl -X GET 'http://127.0.0.1:8009/api/posts' \
 -H 'Accept: application/json' \
 -H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
 
-NB! Added pagination will show results in DESC manner, meaning the newest first. At bottom of the json response is `next_cursor` which you can use like this `GET /api/posts?cursor={next_or_previous_cursor_value}`. Also for easy testing in PostController@index change `->cursorPaginate(20);` to smt small like 2.
+# NB! Added pagination will show results in DESC manner, meaning the newest first. At bottom of the json response is `next_cursor` which you can use like this `GET /api/posts?cursor={next_or_previous_cursor_value}`. Also for easy testing in PostController@index change `->cursorPaginate(20);` to smt small like 2.
 
 http://127.0.0.1:8009/api/posts?cursor={eyJjcmVhdGVkX2F0IjoiMjAyNi0wMS0yMSAyMDoxNjoxNCIsIl9wb2ludHNUb05leHRJdGVtcyI6dHJ1ZX0}
 
@@ -176,9 +175,11 @@ There is a Postman collection and Postman environment that need to be imported i
 
 3. OpenAPI Swagger.
 
+
+
 ### Admin panel
 
-The admin panel is installed with Filament. Filament is FOSS and no paid features.. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
+The admin panel is installed with Filament. Filament is FOSS and no paid features. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
 You can only approve newly registered and unapproved `Users`. The counter will show their number.</br>
 Photos and descriptions are stored via the `register` resource.</br>
 
@@ -197,14 +198,56 @@ A logged in user can make CRUD operations only on their posts. They cannot assig
 
 ![Filament Soft Delete User Cascade Delete Posts](laravel/resources/images/2026-01-12-hacksoft-task-soft-delete-user-cascade-posts.png)
 
-Of course there are things to polish.
+### Scheduler
+
+A cronjob, but done in Laravel. It will run every day at 0h 0mins. Next values (*) are day, month, weekday. At first the cron should show no results are deleted. We can simulate deletion with a simple query to set a deletion date older than 10 days and running the cron.
+
+```sql
+update `posts` set `deleted_at` = '2026-01-11 14:13:02' where `id` = {id};
+```
+
+```bash
+tihomir@ubuntu:~/2026-01-12-hacksoft-task$ docker exec -it hacksoft-laravel-1 bash
+root@69da3775225c:/var/www/html# php artisan schedule:list
+
+  0 0 * * *  php artisan purge:old-posts ............................ Next Due: 9 hours from now
+
+root@69da3775225c:/var/www/html# php artisan app:purge-old-posts
+Purged 0 old posts.
+root@69da3775225c:/var/www/html# php artisan app:purge-old-posts
+Purged 1 old posts.
+```
+
+### Worker
+
+By moving the deletion logic in a Job and Dispatcher we ensure that if we had to delete millions of records it will be executed in the background in the queue.
+
+```bash
+root@69da3775225c:/var/www/html# php artisan queue:listen       
+
+	INFO  Processing jobs from the [default] queue.  
+
+root@69da3775225c:/var/www/html# php artisan queue:work
+
+	INFO  Processing jobs from the [default] queue.
+
+	2026-01-22 14:41:33 App\Jobs\PurgePostJob .............. RUNNING
+	2026-01-22 14:41:33 App\Jobs\PurgePostJob ......... 33.99ms DONE
+	2026-01-22 14:41:33 App\Jobs\PurgePostJob .............. RUNNING
+	2026-01-22 14:41:33 App\Jobs\PurgePostJob ......... 24.88ms DONE
+```
+
+For this to happen we need in antoher terminal to run the command below. It will send the two records I have updated to the queue.
+
+```bash
+root@69da3775225c:/var/www/html# php artisan app:purge-old-posts
+	Dispatched 2 posts to the queue for purging.
+```
+
 
 Tasks:
-- Sheduler.
-- Queue.
-- Rate limiting. Trottling.
-- README.md. Printscreens.
 - OpenAPI Swagger.
+- README.md. Printscreens.
 - Integration tests.
 - Test coverage.
 - Build process test !!!
@@ -226,5 +269,8 @@ Done:
 - Avoid n+1 query problem ::with();.
 - Migrations. Seeders.
 - Postman collections and environment.
+- Sheduler.
+- Queue.
 <!-- - Caching. -->
 <!-- - Proper datetime conversion with Carbon middleware. -->
+<!-- - Rate limiting. Trottling. -->
