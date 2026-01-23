@@ -249,11 +249,85 @@ root@69da3775225c:/var/www/html# php artisan app:purge-old-posts
 	Dispatched 2 posts to the queue for purging.
 ```
 
+## Tests
+
+We have Unit tests and Feature (Integration/Functional) tests.</br>
+`laravel/tests/Unit`</br>
+`laravel/tests/Feature`
+
+```bash
+./vendor/bin/phpunit
+./vendor/bin/phpunit --testsuite=Unit
+./vendor/bin/phpunit --testsuite=Feature
+```
+
+What is covered:
+- The routing system.
+- The Validation logic.
+- The Password hashing.
+- The Database insertion.
+- The JSON response formatting.
+
+```bash
+root@69da3775225c:/var/www/html# ./vendor/bin/phpunit
+PHPUnit 11.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.30
+Configuration: /var/www/html/phpunit.xml
+...............S......................S..                         41 / 41 (100%)
+
+Time: 00:09.384, Memory: 66.50 MB
+
+OK, but some tests were skipped!
+Tests: 41, Assertions: 143, Skipped: 2.
+```
+
+## Test Coverage
+
+```bash
+root@69da3775225c:/var/www/html# XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-text
+PHPUnit 11.5.48 by Sebastian Bergmann and contributors.
+
+Runtime:       PHP 8.3.30 with Xdebug 3.5.0
+Configuration: /var/www/html/phpunit.xml
+
+...............S......................S..                         41 / 41 (100%)
+
+Time: 00:08.519, Memory: 68.50 MB
+
+OK, but some tests were skipped!
+Tests: 41, Assertions: 143, Skipped: 2.
+
+
+Code Coverage Report:      
+  2026-01-23 02:39:28      
+                           
+ Summary:                  
+  Classes: 20.00% (4/20)   
+  Methods: 44.44% (20/45)  
+  Lines:   49.84% (158/317)
+
+App\Filament\Resources\Posts\PostResource
+  Methods:  33.33% ( 2/ 6)   Lines:  18.60% (  8/ 43)
+App\Filament\Resources\UserResource
+  Methods:  28.57% ( 2/ 7)   Lines:  12.12% (  8/ 66)
+App\Http\Controllers\Api\AuthController
+  Methods:  66.67% ( 2/ 3)   Lines:  93.48% ( 43/ 46)
+App\Http\Controllers\Api\PostController
+  Methods: 100.00% ( 4/ 4)   Lines: 100.00% ( 26/ 26)
+App\Http\Controllers\Api\ProfileController
+  Methods:  50.00% ( 1/ 2)   Lines:  86.21% ( 25/ 29)
+App\Models\Post
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+App\Models\User
+  Methods:  80.00% ( 4/ 5)   Lines:  95.00% ( 19/ 20)
+App\Providers\AppServiceProvider
+  Methods: 100.00% ( 2/ 2)   Lines: 100.00% (  2/  2)
+App\Providers\Filament\AdminPanelProvider
+  Methods: 100.00% ( 1/ 1)   Lines: 100.00% ( 25/ 25)
+```
 
 Tasks:
-- README.md. Printscreens.
-- Integration tests.
-- Test coverage.
 - Build process test !!!
 - Contributor.
 - Email.
@@ -277,6 +351,8 @@ Done:
 - Queue.
 - Postman collections and environment.
 - OpenAPI Swagger.
+- Test coverage.
+- README.md. Printscreens.
 <!-- - Caching. -->
 <!-- - Proper datetime conversion with Carbon middleware. -->
 <!-- - Rate limiting. Trottling. -->

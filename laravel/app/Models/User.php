@@ -99,8 +99,12 @@ class User extends Authenticatable implements FilamentUser
             }
         });
 
+        # Only restore posts that were deleted with the user. Not earlier.
         static::restoring(function (User $user) {
-            $user->posts()->onlyTrashed()->restore();
+            $user->posts()
+                ->onlyTrashed()
+                ->where('deleted_at', '>=', $user->deleted_at)
+                ->restore();
         });
     }
 
