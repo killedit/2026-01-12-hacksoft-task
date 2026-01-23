@@ -130,8 +130,8 @@ curl -X POST  http://127.0.0.1:8009/api/me \
   -H 'Content-Type: application/json' \
   -H 'Authorization: Bearer 6|tIPBGCSUJZSRJZLv33oIFmouJKuWCEkSTAGKaBN87d29ffb3'
   -F '_method="PATCH"' \
-  -F 'name="User's changed the name."' \
-  -F 'description="User's changed the description."' \
+  -F 'name="User has changed the name."' \
+  -F 'description="User has changed the description."' \
   -F 'profile_picture=@"/absolute/path/to/photo.jpg"'
 
 curl -X GET 'http://127.0.0.1:8009/api/posts' \
@@ -163,18 +163,23 @@ You can run tests with example profile pictures `resources/images/`. The model w
 
 2. Postman.
 
-![Postman preview](laravel/resources/images/2026-01-12-hacksoft-postman-preview.png) 
+![Postman preview](laravel/resources/images/2026-01-12-hacksoft-task-postman-preview.png)
 
 There is a Postman collection and Postman environment that need to be imported in.
 
 `/laravel/postman/2026-01-12-hacksoft-task.postman_environment.json` </br>
 `/laravel/postman/2026-01-12-hacksoft-task.postman_collection.json`
 
-![Postman collection](laravel/resources/images/2026-01-12-hacksoft-task-postman-collection-login-resource-token.png) 
-![Postman environment](laravel/resources/images/2026-01-12-hacksoft-task-postman-environment-variable-token.png) 
+![Postman collection](laravel/resources/images/2026-01-12-hacksoft-task-postman-collection-login-resource-token.png)
+![Postman environment](laravel/resources/images/2026-01-12-hacksoft-task-postman-environment-variable-token.png)
 
 3. OpenAPI Swagger.
 
+After logging-in the token is automatically passed so you can test the whole documentation. All endpoints should work as intended and are not only previews.
+
+`http://127.0.0.1:8009/api/documentation`
+
+![Swagger](laravel/resources/images/2026-01-12-hacksoft-task-swagger.png)
 
 
 ### Admin panel
@@ -223,9 +228,9 @@ Purged 1 old posts.
 By moving the deletion logic in a Job and Dispatcher we ensure that if we had to delete millions of records it will be executed in the background in the queue.
 
 ```bash
-root@69da3775225c:/var/www/html# php artisan queue:listen       
+root@69da3775225c:/var/www/html# php artisan queue:listen
 
-	INFO  Processing jobs from the [default] queue.  
+	INFO  Processing jobs from the [default] queue.
 
 root@69da3775225c:/var/www/html# php artisan queue:work
 
@@ -246,7 +251,6 @@ root@69da3775225c:/var/www/html# php artisan app:purge-old-posts
 
 
 Tasks:
-- OpenAPI Swagger.
 - README.md. Printscreens.
 - Integration tests.
 - Test coverage.
@@ -257,7 +261,7 @@ Tasks:
 Done:
 - Docker initial setup.
 - Authentication resource.
-- Registration resource. Images are stored in 
+- Registration resource. Store images.
 - Sanctum middleware for CORS.
 - Handle 405 method not allowed as 404 to prevent information leakeage. http://127.0.0.1:8009/api/{login} will return json response instead of debug backtrace.
 - Sandboxed users should not be able to log in!
@@ -271,6 +275,8 @@ Done:
 - Postman collections and environment.
 - Sheduler.
 - Queue.
+- Postman collections and environment.
+- OpenAPI Swagger.
 <!-- - Caching. -->
 <!-- - Proper datetime conversion with Carbon middleware. -->
 <!-- - Rate limiting. Trottling. -->

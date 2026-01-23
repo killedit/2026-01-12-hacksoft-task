@@ -10,7 +10,27 @@ use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use OpenApi\Attributes as OA;
 
+#[OA\Schema(
+    schema: "User",
+    type: "object",
+    title: "User",
+    description: "User model",
+    properties: [
+        new OA\Property(property: "id", type: "integer", example: 1),
+        new OA\Property(property: "name", type: "string", example: "User"),
+        new OA\Property(property: "email", type: "string", format: "email", example: "user@example.com"),
+        new OA\Property(property: "email_verified_at", type: "string", format: "date-time", nullable: true),
+        new OA\Property(property: "profile_picture", type: "string", nullable: true, example: "profile-pictures/image123.jpg"),
+        new OA\Property(property: "description", type: "string", nullable: true, example: "Just a user."),
+        new OA\Property(property: "is_approved", type: "boolean", example: true),
+        new OA\Property(property: "is_admin", type: "boolean", example: false),
+        new OA\Property(property: "created_at", type: "string", format: "date-time"),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+        new OA\Property(property: "deleted_at", type: "string", format: "date-time", nullable: true)
+    ]
+)]
 class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
