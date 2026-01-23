@@ -32,7 +32,7 @@ The back-end Laravel Rest API should runs at:</br>
         .env                        # Laravel specific settings.
     /{fronend}                      # Future {frontend}.
     docker-compose.yaml             # Where all containers are definied.
-    .env                            # This is neede for MySQL docker container initialization.
+    .env                            # This is needed for MySQL docker container initialization.
 ```
 
 ## Connect to the database
@@ -81,7 +81,7 @@ Likes
 
 ## REST API resources
 
-I have created a `Test` user that should play the role of admin with password `test123` in db seeder.
+I have created a `Test` user that should play the role of admin with email `test@example.com` and password `test123` in db seeder.
 
 | Method | Endpoint | Controller | Description |
 | --- | --- | --- | --- |
@@ -159,13 +159,13 @@ curl -X DELETE 'http://127.0.0.1:8009/api/posts/{3}/delete' \
 -H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
 ```
 
-You can run tests with example profile pictures `resources/images/`. The model will save them in `storage/public/profile-pictures/`. The current logged-in resource `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url infront to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
+You use example profile pictures `resources/images/` for testing. The model will save them in `storage/public/profile-pictures/`. The currently logged-in user endpoint `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url in front to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
 
 2. Postman.
 
 ![Postman preview](laravel/resources/images/2026-01-12-hacksoft-task-postman-preview.png)
 
-There is a Postman collection and Postman environment that need to be imported in.
+There is a Postman collection and Postman environment that you can use for easier testing.
 
 `/laravel/postman/2026-01-12-hacksoft-task.postman_environment.json` </br>
 `/laravel/postman/2026-01-12-hacksoft-task.postman_collection.json`
@@ -175,7 +175,7 @@ There is a Postman collection and Postman environment that need to be imported i
 
 3. OpenAPI Swagger.
 
-After logging-in the token is automatically passed so you can test the whole documentation. All endpoints should work as intended and are not only previews.
+After running the first resource `/api/login` you will get a generated token. Use it to authenticate the Swagger API. This way it will be automatically passed for consecutive requests. All endpoints should work as intended and they are not only for preview.
 
 `http://127.0.0.1:8009/api/documentation`
 
@@ -184,11 +184,15 @@ After logging-in the token is automatically passed so you can test the whole doc
 
 ### Admin panel
 
-The admin panel is installed with Filament. Filament is FOSS and no paid features. I've set an admin with email:`test@example.com` and password:`test123` in the db seeder.</br>
-You can only approve newly registered and unapproved `Users`. The counter will show their number.</br>
-Photos and descriptions are stored via the `register` resource.</br>
+The admin panel is installed with Filament. I chose Filament, because it's FOSS. Use the default admin to login:
 
-[http://localhost:8009/admin]
+```bash
+http://localhost:8009/admin
+  test@example.com
+  test123
+```
+
+With the default admin you can approve newly registered and unapproved `Users`. The counter will show their number.</br>
 
 ![Postman RegisterUser](laravel/resources/images/2026-01-12-hacksoft-task-postman-register-user.png)
 ![Postman Filament Users List](laravel/resources/images/2026-01-12-hacksoft-task-filament-users-list.png)
@@ -198,7 +202,8 @@ User that is not approved will not be able to login.
 
 ![Postman Postman Unapproved](laravel/resources/images/2026-01-12-hacksoft-task-postman-unapproved-user-login.png)
 
-Soft deleting user results in cascade soft deleting of their posts. Only admin user can delete other users.
+Only admin user can delete other users.
+Soft deleting user results in a cascade soft delete of their posts.
 A logged in user can make CRUD operations only on their posts. They cannot assign/change author of a post.
 
 ![Filament Soft Delete User Cascade Delete Posts](laravel/resources/images/2026-01-12-hacksoft-task-soft-delete-user-cascade-posts.png)
@@ -225,7 +230,7 @@ Purged 1 old posts.
 
 ### Worker
 
-By moving the deletion logic in a Job and Dispatcher we ensure that if we had to delete millions of records it will be executed in the background in the queue.
+By moving the deletion logic in a Job and Dispatcher we ensure that if we had to delete a bunch of records it will be executed in the background in the queue.
 
 ```bash
 root@69da3775225c:/var/www/html# php artisan queue:listen
@@ -328,9 +333,11 @@ App\Providers\Filament\AdminPanelProvider
 ```
 
 Tasks:
-- Build process test !!!
 - Contributor.
 - Email.
+<!-- - Caching. -->
+<!-- - Proper datetime conversion with Carbon middleware. -->
+<!-- - Rate limiting. Trottling. -->
 
 Done:
 - Docker initial setup.
@@ -353,6 +360,4 @@ Done:
 - OpenAPI Swagger.
 - Test coverage.
 - README.md. Printscreens.
-<!-- - Caching. -->
-<!-- - Proper datetime conversion with Carbon middleware. -->
-<!-- - Rate limiting. Trottling. -->
+- Build process test !!!

@@ -16,8 +16,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-      redis:
-        condition: service_started
     networks:
       - network
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
@@ -31,7 +29,6 @@ services:
     volumes: *laravel
     depends_on:
       - mysql
-      - redis
     networks:
       - network
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
@@ -45,7 +42,6 @@ services:
     volumes: *laravel
     depends_on:
       - mysql
-      - redis
     networks:
       - network
     entrypoint: ["/usr/local/bin/entrypoint.sh"]
@@ -67,15 +63,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # redis:
-  #   image: redis:7-alpine
-  #   # container_name: hacksoft_redis
-  #   restart: unless-stopped
-  #   ports:
-  #     - "6379:6379"
-  #   networks:
-  #     - network
 
   nginx:
     image: nginx:alpine
