@@ -98,6 +98,39 @@ class AuthController extends Controller
             ], 401);
         }
 
+        /**
+         * @todo Rethink and retest!
+         *
+         * Auth::logout() is does nothing!? Approval != authentication. User isn’t authenticated yet and approval checks shouldn’t live inside login. It should be in middleware or state check.
+         *
+         * 1. Guard-level check
+         * if (!Hash::check(...)) {
+         *     return 401;
+         * }
+         *
+         * if (!$user->is_approved) {
+         *     return response()->json([
+         *         'message' => 'Account not active'
+         *     ], 423);
+         * }
+         *
+         * Information leakage consideration.
+         * No Auth::logout(). No side effects.
+         *
+         * 2.Middleware-level check
+         * Route::middleware(['auth:sanctum', 'approved'])->group(...)
+         *
+         * class EnsureUserIsApproved
+         * {
+         *     public function handle($request, Closure $next)
+         *     {
+         *         if (!$request->user()->is_approved) {
+         *             return response()->json(['message' => 'Account not approved'], 403);
+         *         }
+         *         return $next($request);
+         *     }
+         * }
+         */
         if (!$user->is_approved) {
             Auth::logout();
 

@@ -12,7 +12,7 @@ If you want to follow the docker container logs remove the `-d` flag so you don'
 
 The application should run migrations and seeders.</br>
 
-The back-end Laravel Rest API should runs at:</br>
+The back-end Laravel Rest API should run at:</br>
 `http://127.0.0.1:8009`
 
 ## Overall project structure:
@@ -26,7 +26,7 @@ The back-end Laravel Rest API should runs at:</br>
             /conf.d
                 xdebug.ini          # Xdebug. Test coverage.
             entrypoint-laravel.sh   # Bash script that runs migrations and seeders in the Laravel container.
-            entrypoint-worker.sh    # The scheduler and the queue only need to wait only for working MySQL and Redis.
+            entrypoint-worker.sh    # The scheduler and the queue only need to wait for working MySQL.
     /laravel                        # Back-end application.
         Dockerfile                  # Backend container setup.
         .env                        # Laravel specific settings.
@@ -159,7 +159,7 @@ curl -X DELETE 'http://127.0.0.1:8009/api/posts/{3}/delete' \
 -H 'Authorization: Bearer 1|SVskYbt2jcYPpp5OwdVFzcqnhROyFbnHh7tUZJCn76fd14a8'
 ```
 
-You use example profile pictures `resources/images/` for testing. The model will save them in `storage/public/profile-pictures/`. The currently logged-in user endpoint `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url in front to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
+You use example profile pictures `resources/images/` for testing. The model will save them in `storage/app/public/profile-pictures/`. The currently logged-in user endpoint `http://127.0.0.1:8009/api/me` will get the value from the databse `profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`. Just add the app url in front to display the image in the browser `http://127.0.0.1:8009/storage/profile-pictures/cGsZbrk5pRoGe33p33sbsl6mrNLFGnZYvwhSq9fT.jpg`.
 
 2. Postman.
 

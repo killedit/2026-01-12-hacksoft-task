@@ -50,11 +50,16 @@ class UserResource extends Resource
                 ->label('Profile Picture')
                 ->image()
                 ->avatar()
-                ->imageEditor()
+                // ->imageEditor()
                 // ->circular()
                 ->disk('public')
                 ->directory('profile-pictures')
                 ->visibility('public')
+                ->deletable()
+                ->downloadable()
+                ->previewable(true)
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                // ->maxSize(5120)
                 ->nullable(),
 
             Toggle::make('is_approved')->label('Approved'),

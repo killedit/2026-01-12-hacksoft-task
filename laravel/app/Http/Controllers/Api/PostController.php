@@ -43,6 +43,56 @@ class PostController extends Controller
         )
     )]
     #[OA\Response(response: 401, description: "Unauthorized")]
+    /**
+     * @todo Rethink and retest!
+     *
+     * Returns too much data! Add a resource to return DTOs (Data Transfer Objects)!
+     * Basic idea:
+     * Model - database representation.
+     * Resource - API representation.
+     *
+     * Create the resources;
+     * php artisan make:resource PostResource
+     * php artisan make:resource UserResource
+     *
+     * class UserResource extends JsonResource
+     * {
+     *     public function toArray($request)
+     *     {
+     *         return [
+     *             'id'   => $this->id,
+     *             'name' => $this->name,
+     *         ];
+     *     }
+     * }
+     *
+     * class PostResource extends JsonResource
+     * {
+     *     public function toArray($request)
+     *     {
+     *         return [
+     *             'id'            => $this->id,
+     *             'content'       => $this->content,
+     *             'created_at'    => $this->created_at,
+     *             'author'        => new UserResource($this->whenLoaded('author')),
+     *             'likes_count'   => $this->likers_count,
+     *             'likers'        => UserResource::collection(
+     *                 $this->whenLoaded('likers')
+     *             ),
+     *         ];
+     *     }
+     * }
+     *
+     * public function index()
+     * {
+     *     $posts = Post::with(['author:id,name', 'likers:id,name'])
+     *         ->withCount('likers')
+     *         ->latest()
+     *         ->cursorPaginate(20);
+     *
+     *     return PostResource::collection($posts);
+     * }
+     */
     public function index()
     {
         $posts = Post::with(['author', 'likers'])
@@ -82,6 +132,61 @@ class PostController extends Controller
     )]
     #[OA\Response(response: 401, description: "Unauthorized")]
     #[OA\Response(response: 422, description: "Validation error")]
+    /**
+     * @todo Rethink and retest!
+     *
+     * Remove inline validation whcih is fine form small demos, but not for real projects.
+     *
+     * Form Requests are:
+     * - separation of concerns;
+     * - clean architecture principle;
+     * - reusable;
+     * - testable;
+     * - expressive;
+     * - self-documenting;
+     * - scale better;
+     *
+     * php artisan make:request StorePostRequest
+     *
+     *
+     * // app/Http/Requests/StorePostRequest.php
+     *
+     * class StorePostRequest extends FormRequest
+     * {
+     *     public function authorize(): bool
+     *     {
+     *         return true;//return auth()->check(); - Better. Unauthorized requests never hit the controller. Again. Rethink and retest.
+     *     }
+     *
+     *     public function rules(): array
+     *     {
+     *         return [
+     *             'content' => 'required|string|max:1000',
+     *         ];
+     *     }
+     * }
+     *
+     * Optionally, customize error messages:
+     * public function messages(): array
+     * {
+     *     return [
+     *         'content.required' => 'Post content is required.',
+     *     ];
+     * }
+     *
+     * Usage:
+     * public function store(StorePostRequest $request)
+     * {
+     *     $post = $request->user()->posts()->create(
+     *         $request->validated()
+     *     );
+     *
+     *     return response()->json([
+     *         'message' => 'Post created successfully.',
+     *         'post' => $post->load('author'),
+     *     ], 201);
+     * }
+     */
     public function store(Request $request)
     {
         $validated = $request->validate([
